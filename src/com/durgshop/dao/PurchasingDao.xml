@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- namespace表示当前映射文件要映射的接口 -->
+  <mapper namespace="com.durgshop.dao.PurchasingDao">
+  
+   <!-- 配置一个结果映射，把数据库sql执行的查询列映射到java实体的属性中   (ORM对象关系映射) -->
+   <!-- type配置java的实体类的名称，id自定义 -->
+   <resultMap type="Purchasing" id="PurchasingMap">
+     <!-- id标签一般配置主键列 ，column对应数据库表的列，property对应类的属性-->
+     <id  column="purchasingNo"  property="purchasingNo"/>
+     <result column="purchasingDate" property="purchasingDate"/>
+     <result column="handler" property="handler"/>
+     <result column="purchasingRemark" property="purchasingRemark"/>
+     <result column="purchasingName" property="purchasingName"/>
+      </resultMap>
+    
+    <sql id="wheresql">
+         <where>
+              <if test="condition!=null and condition.purchasingNo!=null ">
+           and   purchasingNo like   concat('%',#{condition.purchasingNo},'%')
+           </if>
+         </where>
+      </sql>
+      
+      <select id="findByPager" resultMap="PurchasingMap" parameterType="Pager">
+      select purchasingNo,purchasingDate,handler,purchasingRemark,purchasingName from Purchasing
+      <include refid="wheresql"></include>
+       order by purchasingNo asc
+       
+       <if test="start !=null and size !=null">
+          limit  #{start},#{size}
+       </if>
+       </select>
+       
+        <select id="findTotalByPager" resultType="int" parameterType="Pager">
+        select count(*)   from  purchasing 
+         </select>
+         
+         <insert id="add" parameterType="Sale">
+		insert into purchasing(purchasingNo,purchasingDate,handler,purchasingRemark,purchasingName)
+			values(#{purchasingNo},#{purchasingDate},#{handler},#{purchasingRemark},#{purchasingName})
+
+	</insert>
+	
+	
+	<update id="edit">
+		update purchasing
+			<!-- 动态sql：提供解决动态生成sql时的各种问题的标签
+						set标签会把多余的逗号去掉 -->
+			<set>
+				<!-- test="nickName!=null"  nickName是Java的属性名-->
+				<!-- nickName（表的列名） = #{nickName}（Java的属性名）-->
+				<if test="purchasingDate!=null">purchasingDate = #{purchasingDate},</if>
+				<if test="handler!=null">handler = #{handler},</if>
+				<if test="purchasingRemark!=null">purchasingRemark = #{purchasingRemark},</if>
+				<if test="purchasingName!=null">purchasingName = #{purchasingName},</if>
+			</set>
+			
+			<!-- where不建议使用if标签进行嵌套，避免没有传递条件导致整表的数据都被修改掉
+				 修改单条数据时，where使用主键列进行约束
+				<if test="userNo!=null">
+					where userNo = #{userNo}
+				</if> 
+			-->
+			where purchasingNo = #{purchasingNo}
+			
+	</update>
+	
+	
+	<!-- 删除单条数据时，where使用主键列进行约束 -->
+	<delete id="delete">
+	delete from purchasing where purchasingNo=#{purchasingNo}
+	</delete>
+      </mapper> 

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- namespace表示当前映射文件要映射的接口 -->
+ <mapper namespace="com.durgshop.dao.StockOutDetailDao">
+ 
+ 	<resultMap type="StockOutDetail" id="StockOutDetailMap">
+ 		<id column="stockOutDetailNo" property="stockOutDetailNo"/>		
+ 		<!-- <result column="drugNo" property="drugNo" /> -->
+ 		<result column="stockOutDetailQuantity" property="stockOutDetailQuantity" />
+ 		
+ 		<!--  使用一对一关系映射，一个商品对应一种商品类型 -->
+	     <association property="stockOut" javaType="StockOut">
+	        <id column="stockOutNo" property="stockOutNo"/>
+	        <result column="stockOutName" property="stockOutName"/>
+      	 	<result column="stockOutTime" property="stockOutTime"/>
+	        <result column="handler" property="handler"/> 
+	        <result column="saleNo" property="saleNo" />
+	       	
+	     </association> 
+	     <association property="drugOne" javaType="Drug">
+	        <id column="drugNo" property="drugNo"/>
+	        <result column="drugName" property="drugName"/>
+	      	<result column="typeNo" property="typeNo"/>
+	      	<result column="drugRemark" property="drugRemark"/>
+	        <result column="drugSpecification" property="drugSpecification"/>
+	       	
+	     </association>
+	     
+	     
+ 		
+ 	</resultMap>
+ 	
+ 	
+ 	<resultMap type="StockOutDetail" id="StockOutDetailMap2">
+ 		<id column="stockOutDetailNo" property="stockOutDetailNo"/>		
+ 		<result column="stockOutDetailQuantity" property="stockOutDetailQuantity" />
+ 		
+ 		 <association property="stockOut" javaType="StockOut">
+	        <id column="stockOutNo" property="stockOutNo"/>
+	       	
+	     </association> 
+ 		
+	     <association property="drugOne" javaType="Drug">
+	        <id column="drugNo" property="drugNo"/>
+	        <result column="drugName" property="drugName"/>
+	      	<result column="typeNo" property="typeNo"/>
+	        <result column="drugSpecification" property="drugSpecification"/>
+	       	
+	     </association>
+	     
+	     
+ 		
+ 	</resultMap>
+ 	
+ 	
+ 	
+ 	<!-- 对于多次使用的sql代码可以使用sql标签统一进行编写，在使用的位置使用include标签进行包含 -->
+     <sql id="pagerWhere">
+       <where>
+           <if test="condition!=null and condition.stockOutDetailNo!=null ">
+             stockOutDetailNo like   concat('%',#{condition.stockOutDetailNo},'%')
+           </if> 
+           <if test="condition!=null and condition.stockOutDetailQuantity!=null ">
+            and  stockOutDetailQuantity like   concat('%',#{condition.stockOutDetailQuantity},'%')
+           </if>
+           
+       </where>
+     </sql>
+ 
+ 	<sql id="fromsql">
+ 		from stockOutDetail sod join stockOut so on so.stockOutNo=sod.stockOutNo join Drug d on sod.drugNo=d.drugNo
+ 	</sql>
+ 
+   <!-- 使用select标签配置查询sql，id配置查询的方法名 -->
+   <select id="findByPager" resultMap="StockOutDetailMap" parameterType="Pager">
+    	 select * <include refid="fromsql"></include>
+    	 
+        <!-- 包含公共的sql的where查询条件 -->
+       <include refid="pagerWhere" />
+       	order by stockOutDetailNo desc
+    	<if test="start !=null and size !=null">
+          limit  #{start},#{size}
+       	</if> 
+   </select>
+    
+   <select id="findAllById" parameterType="int" resultMap="StockOutDetailMap2">
+   		select * from stockOutDetail sod left join stockOut so on so.stockOutNo=sod.stockOutNo
+   		left join drug d on d.drugNo=sod.drugNo where so.stockOutNo=#{stockOutNo}
+   </select>
+   
+   
+    <select id="findTotalByPager" resultType="int" parameterType="Pager">
+        <!-- 统计查询的关联表和查询条件必须跟数据查询一致；统计结果只有一行一列不需要进行分页 -->
+      	 select count(*) <include refid="fromsql"></include>
+        <!-- 包含公共的sql的where查询条件 -->
+         <include refid="pagerWhere" />
+   </select>
+   
+   <insert id="add" parameterType="StockOutDetail">
+   		insert into stockOutDetail
+   		values
+   		(null,#{stockOut.stockOutNo},#{drugOne.drugNo},#{stockOutDetailQuantity})
+
+   </insert>
+   
+   <update id="edit" parameterType="StockOutDetail">
+   	 update stockOutDetail 
+   		<set>
+   			<if test="stockOut.stockOutNo != null">
+   				stockOutNo = #{stockOut.stockOutNo},
+   			</if>
+   			<if test="drugOne.drugNo != null">
+   				drugNo=#{drugOne.drugNo},
+   			</if>
+   			<if test="stockOutDetailQuantity != null">
+   				stockOutDetailQuantity = #{stockOutDetailQuantity},
+   			</if>
+   		
+   		</set> 
+  			where stockOutDetailNo=#{stockOutDetailNo}
+   </update>
+   
+   <delete id="delete" parameterType="StockOutDetail">
+   		 delete from stockOutDetail where stockOutDetailNo=#{stockOutDetailNo}
+   </delete>
+ 
+ </mapper> 
+  

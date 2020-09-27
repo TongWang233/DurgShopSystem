@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- namespace表示当前映射文件要映射的接口 -->
+  <mapper namespace="com.durgshop.dao.PurchasingDetailDao">
+  
+   <!-- 配置一个结果映射，把数据库sql执行的查询列映射到java实体的属性中   (ORM对象关系映射) -->
+   <!-- type配置java的实体类的名称，id自定义 -->
+   <resultMap type="PurchasingDetail" id="PurchasingDetailMap">
+     <!-- id标签一般配置主键列 ，column对应数据库表的列，property对应类的属性-->
+     <id  column="purchasingDetailNo"  property="purchasingDetailNo"/>
+      <result column="purchasingNo" property="purchasingNo"/>
+      <result column="drugNo" property="drugNo"/>
+     <result column="purchasingDetailQuantity" property="purchasingDetailQuantity"/>
+     <result column="purchasingDetailPrice" property="purchasingDetailPrice"/>
+     <result column="productDate" property="productDate"/>
+     
+      <association property="drug" javaType="Drug">
+       <id column="drugNo" property="drugNo" />
+	  <result column="drugName"  property="drugName"/>
+	 </association>
+	 
+	 <association property="purchasing" javaType="Purchasing">
+       <id column="purchasingNo" property="purchasingNo" />
+	  <result column="purchasingName"  property="purchasingName"/>
+	 </association>
+      </resultMap>
+      
+      
+        <sql id="wheresql">
+         <where>
+              <if test="condition!=null and condition.purchasingNo!=null ">
+           and   pd.purchasingNo like   concat('%',#{condition.purchasingNo},'%')
+           </if>
+         </where>
+      </sql>
+        <sql id="fromsql">
+		from PurchasingDetail pd join drug d on pd.drugNo=d.drugNo join Purchasing p on pd.purchasingNo=p.purchasingNo
+	    </sql>
+
+      
+     
+      
+      <select id="findByPager" resultMap="PurchasingDetailMap" parameterType="Pager">
+      select pd.purchasingDetailNo,pd.drugNo,pd.purchasingNo,pd.purchasingDetailQuantity,pd.purchasingDetailPrice,pd.productDate,
+      d.drugNo,d.drugName,p.purchasingNo,p.purchasingName
+
+      <include refid="fromsql"></include>
+      <include refid="wheresql"></include>
+       order by purchasingDetailNo asc
+      
+       <if test="start !=null and size !=null">
+          limit  #{start},#{size}
+       </if>
+       </select>
+       
+        <select id="findTotalByPager" resultType="int" parameterType="Pager">
+        select count(*)   from  purchasingdetail 
+         </select>
+  
+  	<select id="findById" resultMap="PurchasingDetailMap" >
+  	select *  from  purchasingdetail 
+  	where purchasingDetailNo = #{purchasingDetailNo}
+  	
+  	</select>
+  
+         <insert id="add" parameterType="Sale">
+		insert into purchasingdetail(purchasingDetailNo,purchasingNo,drugNo,purchasingDetailQuantity,purchasingDetailPrice,productDate)
+			values(#{purchasingDetailNo},#{purchasingNo},#{drugNo},#{purchasingDetailQuantity},#{purchasingDetailPrice},#{productDate})
+
+	</insert>
+	
+	
+	<update id="edit">
+		update purchasingdetail
+			<!-- 动态sql：提供解决动态生成sql时的各种问题的标签
+						set标签会把多余的逗号去掉 -->
+			<set>
+				<!-- test="nickName!=null"  nickName是Java的属性名-->
+				<!-- nickName（表的列名） = #{nickName}（Java的属性名）-->
+				<if test="purchasingNo!=null">purchasingNo = #{purchasingNo},</if>
+				<if test="drugNo!=null">drugNo = #{drugNo},</if>
+				<if test="purchasingDetailQuantity!=null">purchasingDetailQuantity = #{purchasingDetailQuantity},</if>
+				<if test="purchasingDetailPrice!=null">purchasingDetailPrice = #{purchasingDetailPrice},</if>
+				<if test="productDate!=null">productDate = #{productDate},</if>
+			</set>
+			
+			<!-- where不建议使用if标签进行嵌套，避免没有传递条件导致整表的数据都被修改掉
+				 修改单条数据时，where使用主键列进行约束
+				<if test="userNo!=null">
+					where userNo = #{userNo}
+				</if> 
+			-->
+			where purchasingDetailNo = #{purchasingDetailNo}
+			
+	</update>
+	
+	
+	<!-- 删除单条数据时，where使用主键列进行约束 -->
+	<delete id="delete">
+	delete from purchasingdetail where purchasingDetailNo=#{purchasingDetailNo}
+	</delete>
+      </mapper> 

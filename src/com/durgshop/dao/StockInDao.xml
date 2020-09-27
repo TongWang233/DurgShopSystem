@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- namespace表示当前映射文件要映射的接口 -->
+ <mapper namespace="com.durgshop.dao.StockInDao" >
+ 
+ 	<resultMap type="StockIn" id="StockInMap">
+ 		<id column="stockInNo" property="stockInNo"/> 
+ 		<result column="stockInTime" property="stockInTime" />
+ 		<result column="handler" property="handler" />
+ 		<result column="stockInName" property="stockInName" />
+ 		
+ 		<collection property="stockInDetail" ofType="StockInDetail">
+ 			<id column="stockInDetailNo" property="stockInDetailNo"/>
+ 			<result column="stockInDetailQuantity" property="stockInDetailQuantity"/>
+ 			<association property="drug" javaType="Drug">
+ 				<id column="drugNo" property="drugNo"/>
+ 				<result column="drugName" property="drugName"/>
+ 			</association>
+ 			
+ 		</collection>
+	     
+	    
+ 	</resultMap>
+ 	
+ 	<!-- 对于多次使用的sql代码可以使用sql标签统一进行编写，在使用的位置使用include标签进行包含 -->
+     <sql id="pagerWhere">
+       <where>
+           <if test="condition!=null and condition.stockInTime!=null ">
+            and  stockInTime like   concat('%',#{condition.stockInTime},'%')
+           </if>
+           <if test="condition!=null and condition.handler!=null ">
+            and  handler like   concat('%',#{condition.handler},'%')
+           </if>
+           <if test="condition!=null and condition.stockInName!=null ">
+            and  stockInName like   concat('%',#{condition.stockInName},'%')
+           </if>
+           
+       </where>
+     </sql>
+ 
+ 
+ 	<sql id="fromsql">
+ 		from stockIn si join Purchasing p on p.purchasingNo=si.purchasingNo  ; 
+ 	</sql>
+ 
+   <!-- 使用select标签配置查询sql，id配置查询的方法名 -->
+   <select id="findByPager" resultMap="StockInMap" parameterType="Pager">
+    	 select * from stockIn si left join stockInDetail sid on si.stockInNo=sid.stockInNo left join Drug d on d.drugNo=sid.drugNo
+        <!-- 包含公共的sql的where查询条件 -->
+       <include refid="pagerWhere" />
+       order by si.stockInNo desc
+    	<if test="start !=null and size !=null">
+          limit  #{start},#{size}
+       	</if>
+   </select>
+   
+      <select id="findTotalByPager" resultType="int" parameterType="Pager">
+        <!-- 统计查询的关联表和查询条件必须跟数据查询一致；统计结果只有一行一列不需要进行分页 -->
+        select count(*) from stockIn si left join stockInDetail sid on si.stockInNo=sid.stockInNo left join Drug d on d.drugNo=sid.drugNo
+        <!-- 包含公共的sql的where查询条件 -->
+         <include refid="pagerWhere" />
+   </select>
+   
+   <insert id="add" parameterType="StockIn">
+   		insert into stockIn 
+   		values
+   		(null,#{stockInTime},#{handler},#{stockInName},#{purchasing.purchasingNo})
+   
+   </insert>
+   
+   <update id="edit" parameterType="StockIn">
+   		update stockIn 
+   		<set>
+   			<if test="stockInTime != null">
+   				stockInTime = #{stockInTime},
+   			</if>
+   			<if test="handler != null">
+   				handler=#{handler},
+   			</if>
+   			<if test="stockInName != null">
+   				stockInName = #{stockInName},
+   			</if>
+   			<if test="purchasing!=null and purchasing.purchasingNo != null">
+   				purchasingNo=#{purchasing.purchasingNo},
+   			</if>
+   		
+   		</set> 
+  		 where stockInNo=#{stockInNo}
+   </update>
+   
+   <delete id="delete" parameterType="StockIn">
+   		delete from stockIn where stockInNo=#{stockInNo}
+   </delete>
+   
+   
+   
+   
+ 
+ </mapper> 
+  

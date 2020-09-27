@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- namespace表示当前映射文件要映射的接口 -->
+  <mapper namespace="com.durgshop.dao.SaleDetailDao">
+  
+   <!-- 配置一个结果映射，把数据库sql执行的查询列映射到java实体的属性中   (ORM对象关系映射) -->
+   <!-- type配置java的实体类的名称，id自定义 -->
+   <resultMap type="SaleDetail" id="SaleDetailMap">
+     <!-- id标签一般配置主键列 ，column对应数据库表的列，property对应类的属性-->
+     <id  column="saleDetailNo"  property="saleDetailNo"/>
+     <result column="drugNo" property="drugNo"/>
+     <result column="saleQuantity" property="saleQuantity"/>
+     <result column="isDelete" property="isDelete"/>
+     <result column="price" property="price"/>
+      <result column="saleNo" property="saleNo"/>
+     
+     <association property="sale" javaType="Sale">
+		<id column="saleNo" property="saleNo" />
+		<result column="saleName" property="saleName" />
+	</association>
+	
+	<association property="drug" javaType="Drug">
+		<id column="drugNo" property="drugNo" />
+		<result column="drugName" property="drugName" />
+	</association>
+      </resultMap>
+      
+       
+      <sql id="wheresql">
+         <where>
+              <if test="condition!=null and condition.saleNo!=null ">
+           and sd.saleNo like concat('%',#{condition.saleNo},'%')
+           </if>
+         </where>
+      </sql>
+       <sql id="fromsql">
+		from SaleDetail sd join drug d on sd.drugNo=d.drugNo join sale s on s.saleNo=sd.saleNo
+	</sql>
+     
+      
+      <select id="findByPager" resultMap="SaleDetailMap" parameterType="Pager">
+      select sd.saleDetailNo,sd.saleNo,sd.saleQuantity,sd.price,d.drugNo,d.drugName,s.saleName
+      <include refid="fromsql"></include>
+      <include refid="wheresql"></include>
+       and sd.isDelete=0
+       order by saleDetailNo asc
+       </select>
+       
+        <select id="findTotalByPager" resultType="int" parameterType="Pager">
+        select count(*)   from  saleDetail where isDelete=0
+         </select>
+         
+         <select id="findById" resultMap="SaleDetailMap" >
+  		select *  from  SaleDetail 
+  		where saleDetailNo = #{saleDetailNo}
+  	</select>
+         
+         <insert id="add" parameterType="SaleDetail">
+		insert into SaleDetail(saleDetailNo,drugNo,saleQuantity,price,saleNo)
+			values(#{saleDetailNo},#{drugNo},#{saleQuantity},#{price},#{saleNo})
+	</insert>
+	
+	
+	<update id="edit">
+		update SaleDetail
+			<!-- 动态sql：提供解决动态生成sql时的各种问题的标签
+						set标签会把多余的逗号去掉 -->
+			<set>
+				<!-- test="nickName!=null"  nickName是Java的属性名-->
+				<!-- nickName（表的列名） = #{nickName}（Java的属性名）-->
+				<if test="drugNo!=null">drugNo = #{drugNo},</if>
+				<if test="price!=null">price = #{price},</if>
+				<if test="saleNo!=null">saleNo = #{saleNo},</if>
+				<if test="saleQuantity!=null">saleQuantity = #{saleQuantity},</if>
+			</set>
+			
+			<!-- where不建议使用if标签进行嵌套，避免没有传递条件导致整表的数据都被修改掉
+				 修改单条数据时，where使用主键列进行约束
+				<if test="userNo!=null">
+					where userNo = #{userNo}
+				</if> 
+			-->
+			where saleDetailNo = #{saleDetailNo} and isDelete=0
+			
+	</update>
+	
+	
+	<!-- 删除单条数据时，where使用主键列进行约束 -->
+	  <update id="delete" parameterType="Sale">
+		update saleDetail  set isDelete = 1 where saleDetailNo = #{saleDetailNo}
+	  </update>
+
+
+	  
+      </mapper> 

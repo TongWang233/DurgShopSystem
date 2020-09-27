@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.durgshop.dao.StorageDao">
+   
+   <resultMap type="com.durgshop.entity.Storage" id="StorageMap">
+		<id column="storageNo"  property="storageNo"/>
+		<result column="drugNo" property="drugNo"/>
+		<result column="storageNumber" property="storageNumber"/>
+		
+		
+		<association property="drug"   javaType="Drug">
+		<id column="drugNo"  property="drugNo"/>
+		<result column="drugName" property="drugName"/>
+		</association>
+		
+		
+	</resultMap>
+	<sql id="pagerWhere">
+		<where>
+	<if test="condition!=null and condition.drugNo!=null ">
+				and s.drugNo= #{condition.drugNo}
+			</if>
+			<if test="condition!=null and condition.storageNo!=null ">
+				and s.storageNo=#{condition.storageNo}
+			</if>
+			<if test="condition!=null and condition.storageNumber!=null ">
+				and s.storageNumber= #{condition.storageNumber}
+			</if>
+				
+		</where>
+	</sql>
+	 <sql id="fromsql">
+		from Storage s join drug d on s.drugNo=d.drugNo
+	</sql>
+
+	<select id="findByPager"  resultMap="StorageMap" parameterType="Pager">
+		select s.storageNo,s.drugNo,s.storageNumber,d.drugNo,d.drugName
+		<include refid="fromsql"/>
+		<include refid="pagerWhere"/>
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	
+	<select id="findTotalByPager" resultType="int" parameterType="Pager">
+		<!-- 统计查询的关联表和查询条件必须跟数据查询一致，统计结果只有一行一列不需要进行分页 -->
+		select count(*) from Storage
+	</select>
+	
+		<select id="findById" resultMap="StorageMap" >
+  	select * from  Storage 
+  	where drugNo = #{drugNo}
+  	</select>
+	
+	<insert id="add" parameterType="Storage">
+		insert into Storage(storageNo,drugNo,storageNumber)
+			values(#{storageNo},#{drugNo},#{storageNumber})
+	</insert>
+	
+	
+	<delete id="delete" parameterType="Storage">
+		delete from Storage where storageNo=#{storageNo}
+	</delete>
+	
+    <update id="edit" parameterType="Storage">
+	update Storage 
+   		<set>
+   			<if test="storageNumber != null">
+   				storageNumber = #{storageNumber},
+   			</if>
+   		
+   		</set> 
+  			where storageNo=#{storageNo}
+   </update>
+ 
+ </mapper> 
+  

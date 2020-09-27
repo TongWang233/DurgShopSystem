@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace表示当前映射文件要映射的接口 -->
+<mapper namespace="com.durgshop.dao.DrugDao">
+	
+	<resultMap type="com.durgshop.entity.Drug" id="DrugMap">
+		<id column="drugNo" property="drugNo" />
+		<result column="drugName" property="drugName" />
+		<result column="drugImage" property="drugImage" />
+		<result column="drugSpecification" property="drugSpecification" />
+		<result column="drugValidity" property="drugValidity" />
+		<!-- <result column="typeNo" property="typeNo" /> -->
+		
+		<!-- <result column="providerNo" property="providerNo" /> -->
+		
+		<result column="drugRemark" property="drugRemark" />
+		<result column="isDelete" property="isDelete" />
+		
+		
+
+		<!-- 一个药品属于一个供应商，一个对一的关系 -->
+		<association property="provider" javaType="com.durgshop.entity.Provider">
+			<id column="providerNo" property="providerNo" />
+			<result column="providerFactory" property="providerFactory" />
+		</association>
+		
+		
+		<!-- 一个药品属于一个属性，一个对一的关系 -->
+		<association property="type" javaType="com.durgshop.entity.Type">
+			<id column="typeNo" property="typeNo" />
+			<result column="typeName" property="typeName" />
+		</association>
+	</resultMap>
+
+
+	<sql id="pagerWhere">
+		<where>
+		     
+			<if test="condition!=null and condition.drugNo!=null ">
+				and d.drugNo like concat('%',#{condition.drugNo},'%')
+			</if>
+			<if test="condition!=null and condition.drugName!=null ">
+				and d.drugName like concat('%',#{condition.drugName},'%')
+			</if>
+			<if test="condition!=null and condition.drugImage!=null ">
+				and d.drugImage like concat('%',#{condition.drugImage},'%')
+			</if>
+			<if test="condition!=null and condition.drugSpecification!=null ">
+				and d.drugSpecification like concat('%',#{condition.drugSpecification},'%')
+			</if>
+			<if test="condition!=null and condition.drugValidity!=null ">
+				and d.drugValidity like concat('%',#{condition.drugValidity},'%')
+			</if>
+			<if test="condition!=null and condition.typeNo!=null ">
+				and d.typeNo like concat('%',#{condition.typeNo},'%')
+			</if>
+			<if test="condition!=null and condition.drugRemark!=null ">
+				and d.drugRemark like concat('%',#{condition.drugRemark},'%')
+			</if>
+			<if test="condition!=null and condition.providerNo!=null ">
+				and d.providerNo like concat('%',#{condition.providerNo},'%')
+			</if>
+			and d.isDelete=0
+			
+			
+		</where>
+	</sql>
+	
+	<sql id="fromsql">
+		from drug d join provider p on d.providerNo=p.providerNo join type t on t.typeNo=d.TypeNo
+	</sql>
+	
+	
+	<select id="findByPager" resultMap="DrugMap"
+		parameterType="com.durgshop.entity.Drug">
+		select d.drugNo,d.drugName,d.drugImage,d.drugSpecification,d.drugValidity,
+		       t.typeNo,p.providerNo,d.drugRemark,
+		       p.providerFactory,t.typeName
+		<include refid="fromsql" />
+		
+		<include refid="pagerWhere" />
+		order by d.drugNo desc
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+
+
+	<select id="findTotalByPager" resultType="int" parameterType="com.durgshop.entity.Drug">
+		<!-- 统计查询的关联表和查询条件必须跟数据查询一致，统计结果只有一行一列不需要进行分页 -->
+		select count(*) 
+		<include refid="fromsql" />
+		
+		<include refid="pagerWhere" />
+		
+	</select>
+
+
+	<insert id="add" parameterType="com.durgshop.entity.Drug">
+		insert into drug
+				(drugNo,drugName,drugImage,drugSpecification,
+		         drugValidity,typeNo,providerNo,drugRemark,isDelete)
+		values(#{drugNo},#{drugName},#{drugImage},#{drugSpecification},
+		       #{drugValidity},#{type.typeNo},#{provider.providerNo},#{drugRemark},0)
+	</insert>
+
+
+	<update id="edit" parameterType="com.durgshop.entity.Drug">
+		update drug
+		<set>
+			<if test="drugName!=null">drugName = #{drugName},</if>
+			<if test="drugImage!=null">drugImage = #{drugImage},</if>
+			<if test="drugSpecification!=null">drugSpecification = #{drugSpecification},</if>
+			<if test="drugValidity!=null">drugValidity = #{drugValidity},</if>
+			<if test="type.typeNo!=null">typeNo = #{type.typeNo},</if>
+			<if test="provider.providerNo!=null">providerNo = #{provider.providerNo},</if>
+			<if test="drugRemark">drugRemark = #{drugRemark},</if>
+			<if test="drugRemark!=null">drugRemark = #{drugRemark},</if>
+		</set>
+		where drugNo = #{drugNo}
+	</update>
+
+	
+	<update id="delete" parameterType="com.durgshop.entity.Drug">
+		update drug set isDelete = 1 where drugNo = #{drugNo}
+	</update>
+
+</mapper>
+

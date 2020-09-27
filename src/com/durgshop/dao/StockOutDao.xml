@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- namespace表示当前映射文件要映射的接口 -->
+ <mapper namespace="com.durgshop.dao.StockOutDao">
+ 
+ 	<resultMap id="stockOutMap" type="StockOut"> 
+ 		<id column="stockOutNo" property="stockOutNo"/>
+ 		<result column="stockOutName" property="stockOutName"/>
+ 		<result column="handler" property="handler"/>
+ 		<result column="saleNo" property="saleNo"/>
+ 		<result column="stockOutTime" property="stockOutTime"/>
+ 		
+ 		<collection property="stockOutDetail" ofType="StockOutDetail">
+ 			<id column="stockOutDetailNo" property="stockOutDetailNo"/>
+ 			<result column="stockOutDetailQuantity" property="stockOutDetailQuantity" />
+ 			<association property="drugOne" javaType="Drug">
+ 				<id column="drugNo" property="drugNo"/>
+ 				<result column="drugName" property="drugName"/>
+ 			</association>
+ 		</collection>
+ 	
+ 	</resultMap>
+ 	
+ 	<!-- 对于多次使用的sql代码可以使用sql标签统一进行编写，在使用的位置使用include标签进行包含 -->
+     <sql id="pagerWhere">
+       <where>
+           <if test="condition!=null and condition.handler!=null ">
+            and  handler like   concat('%',#{condition.handler},'%')
+           </if>
+           <if test="condition!=null and condition.saleNo!=null ">
+            and  saleNo like   concat('%',#{condition.saleNo},'%')
+           </if>
+           <if test="condition!=null and condition.stockOutName!=null ">
+            and  stockOutName like   concat('%',#{condition.stockOutName},'%')
+           </if>
+           <if test="condition!=null and condition.stockOutTime != null ">
+            and  stockOutTime like   concat('%',#{condition.stockOutTime},'%')
+           </if>
+       </where>
+     </sql>
+ 
+ 
+ 
+   <!-- 使用select标签配置查询sql，id配置查询的方法名 -->
+   <select id="findByPager" resultMap="stockOutMap" parameterType="Pager">
+     select * from stockOut so left join stockOutDetail sod on so.stockOutNo=sod.stockOutNo left join Drug d on d.drugNo=sod.drugNo
+        <!-- 包含公共的sql的where查询条件 -->
+       <include refid="pagerWhere" />
+       <if test="start !=null and size !=null">
+          limit  #{start},#{size}
+       </if>
+   </select>
+   
+      <select id="findTotalByPager" resultType="int" parameterType="Pager">
+        <!-- 统计查询的关联表和查询条件必须跟数据查询一致；统计结果只有一行一列不需要进行分页 -->
+        select count(*) from stockOut so left join stockOutDetail sod on so.stockOutNo=sod.stockOutNo left join Drug d on d.drugNo=sod.drugNo
+        <!-- 包含公共的sql的where查询条件 -->
+         <include refid="pagerWhere" />
+   </select>
+   
+   <select id="findNoMax" resultType="StockOut">
+   		select * from stockOut order by stockOutNo desc limit 1;
+   </select>
+   
+   <insert id="add" parameterType="StockOut">
+   		insert into stockOut(handler,saleNo,stockOutName,stockOutTime) 
+   		values
+   		(#{handler},#{saleNo},#{stockOutName},#{stockOutTime})
+   
+   </insert>
+   
+   <update id="edit" parameterType="StockOut">
+   		update stockOut
+   		<set>
+   			<if test="stockOutName != null">
+   				stockOutName = #{stockOutName},
+   			</if>
+   			<if test="handler != null">
+   				handler=#{handler},
+   			</if>
+   			<if test="saleNo != null">
+   				saleNo = #{saleNo},
+   			</if>
+   			<if test="handler != null">
+   				stockOutTime=#{stockOutTime},
+   			</if>
+   		
+   		</set> 
+  		 where stockOutNo=#{stockOutNo}
+   </update>
+   
+   <delete id="delete" parameterType="StockOut">
+   		delete from stockOut where stockOutNo=#{stockOutNo}
+   </delete>
+   
+   
+   
+   
+ 
+ </mapper> 
+  

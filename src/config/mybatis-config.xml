@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- mybatis环境配置文件 -->
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+ 
+ 
+ <configuration>
+ <!-- properties?, settings?, typeAliases?, typeHandlers?, objectFactory?, 
+ objectWrapperFactory?, reflectorFactory?, plugins?, environments?, databaseIdProvider?, 
+ mappers? -->
+ 
+ <!-- 属性配置 -->
+ <properties>
+ 	<property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+ 	<property name="url" value="jdbc:mysql://localhost:3306/drug_shop?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=true&amp;serverTimezone=Asia/Shanghai
+"/>
+ 	<property name="username" value="root"/>
+ 	<property name="password" value="root"/>
+ </properties>
+ 
+ 
+<!-- mybatis提供了别名机制解决配置文件复杂的问题，别名配置有两种方式：
+	  每个类配置一个别名，或针对所在类型的package包进行配置 -->
+ <typeAliases>
+ 	<!-- <typeAlias type="com.neuedu.jxcsystem.entity.UserMessage" alias="UserMessage"/>
+  		 <typeAlias type="com.neuedu.jxcsystem.entity.Pager" alias="Pager"/> -->
+  	
+  	<!-- 没有特殊情况，使用所在类型的package包进行配置-->
+  	<package name="com.durgshop.entity" />
+ </typeAliases>
+ 
+ 
+ 
+ <environments default="development">
+ 	<!-- 配置数据库连接参数：jdbc协议的四个参数 -->
+ 	<environment id="development">
+ 		<!-- 数据库事务的管理方式是jdbc代码 -->
+ 		<transactionManager type="JDBC"/>
+ 		<!-- 配置数据库连接池 -->
+ 		<dataSource type="POOLED">
+			 <property name="driver" value="${driver}"/>
+			 <property name="url" value="${url}"/>
+			 <property name="username" value="${username}"/>
+			 <property name="password" value="${password}"/>
+ 		</dataSource>
+ 		</environment>
+ 	</environments>
+ 	
+ 	<mappers>
+ 	
+ 		<!-- 把接口映射文档托管到mybatis配置文件中 -->
+ 		<mapper resource="com/durgshop/dao/TypeDao.xml" />
+ 		<mapper resource="com/durgshop/dao/ProviderDao.xml" />
+ 		<mapper resource="com/durgshop/dao/DrugDao.xml" />
+ 		<mapper resource="com/durgshop/dao/DoctorDao.xml" />
+ 		<mapper resource="com/durgshop/dao/PatientDao.xml" />
+ 		<mapper resource="com/durgshop/dao/StockInDetailDao.xml" />
+ 		<mapper resource="com/durgshop/dao/StockInDao.xml" />
+ 		<mapper resource="com/durgshop/dao/StockOutDetail.xml" />
+ 	</mappers>
+ </configuration>
