@@ -33,7 +33,7 @@ public class StroageController {
 			@RequestParam(name = "size", defaultValue = "10") Integer size) {
 
 		Pager<Storage> pager = new Pager<>(page, size);
-		System.out.println("我在库存控制层");
+		System.out.println("我在库存控制层list");
 		pager.setCondition(storage);
 		List<Storage> list = storageService.findByPager(pager);
 		int total = storageService.findTotalByPager(pager);

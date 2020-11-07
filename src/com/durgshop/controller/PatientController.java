@@ -15,7 +15,7 @@ import com.durgshop.entity.Result;
 import com.durgshop.service.PatientService;
 /**
  * 创建时间2020/7/12
- * @author LQH
+ * @author TonyWang
  *
  */
 @Controller

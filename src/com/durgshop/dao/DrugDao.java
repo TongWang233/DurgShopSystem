@@ -3,7 +3,7 @@ package com.durgshop.dao;
 import com.durgshop.entity.Drug;
 
 /**
-* @author 刘志文
+* @author TonyWang
 * @version 创建时间：2020年7月11日 下午7:33:53
 * @ClassName 类名称
 * @Description 类描述

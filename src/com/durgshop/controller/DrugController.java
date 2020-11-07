@@ -23,7 +23,7 @@ import com.durgshop.util.FileResult;
 import com.durgshop.util.Fileuploadutil;
 
 /**
- * @author 刘志文
+ * @author TonyWang
  * @version 创建时间：2020年7月11日 下午8:13:24
  * @ClassName 类名称
  * @Description 类描述
@@ -50,11 +50,7 @@ public class DrugController {
 			@RequestParam(name = "size", defaultValue = "10") Integer size) {
 
 		Pager<Drug> pager = new Pager<>(page, size);
-		
 		pager.setCondition(drug);
-		System.out.println(drug);
-		
-
 		List<Drug> list = drugService.findByPager(pager);
 		int total = drugService.findTotalByPager(pager);
 

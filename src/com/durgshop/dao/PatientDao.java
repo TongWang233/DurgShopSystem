@@ -1,7 +1,7 @@
 package com.durgshop.dao;
 /**
  * 创建时间2020/7/11
- * @author LQH
+ * @author TonyWang
  */
 import com.durgshop.entity.Patient;
 

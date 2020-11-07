@@ -1,7 +1,7 @@
 package com.durgshop.entity;
 /**
  * 患者实体类
- * @author LQH
+ * @author TonyWang
  *
  */
 public class Patient {

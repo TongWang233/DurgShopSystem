@@ -160,7 +160,6 @@
 				
 				<div title="药品出售管理" data-options="iconCls:'icon-7',selected:true"
 					style="overflow: auto; padding: 10px;">
-					
 
 					<a id="btn" href="javascript:void(0);" class="easyui-linkbutton" 
 						data-options="plain:true,"

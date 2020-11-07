@@ -12,7 +12,7 @@ import com.durgshop.entity.Drug;
 import com.durgshop.service.DrugService;
 
 /**
-* @author 刘志文
+* @author TonyWang
 * @version 创建时间：2020年7月11日 下午8:15:56
 * @ClassName 类名称
 * @Description 类描述

@@ -18,9 +18,7 @@ public class Fileuploadutil {
 
 	private static final String IMAGES = "uploads";
 
-	 private static Logger logger = Logger.getLogger(Fileuploadutil.class);
-	//private static Logger logger = Logger.getLogger(Fileuploadutil.class);
-
+	private static Logger logger = Logger.getLogger(Fileuploadutil.class);
 	private static String getUploadPath(ServletContext context) {
 		String base = context.getRealPath(".");
 		if (base != null) {

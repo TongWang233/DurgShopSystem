@@ -6,7 +6,7 @@ import com.durgshop.entity.Pager;
 
 /**
  * 
- * @author netboy
+ * @author TonyWang
  *
  * @param <T>
  */

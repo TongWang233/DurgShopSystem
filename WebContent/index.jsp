@@ -7,10 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-    測試ssm的整合
-    
     <script type="text/javascript">
-
        location.href="${pageContext.request.contextPath}/login.jsp";
     </script>
 </body>

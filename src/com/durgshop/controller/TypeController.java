@@ -14,7 +14,7 @@ import com.durgshop.entity.Type;
 import com.durgshop.service.TypeService;
 
 /**
-* @author 刘志文
+* @author TonyWang
 * @version 创建时间：2020年7月11日 下午2:36:48
 * @ClassName 类名称
 * @Description 类描述
@@ -32,9 +32,7 @@ public class TypeController {
 	public Pager<Type> findList(Type type,@RequestParam(name = "page" ,defaultValue= "1") Integer page, @RequestParam(name = "size" ,defaultValue = "10") Integer size){
 
 		Pager<Type> pager = new Pager<>(page,size);
-		
 		pager.setCondition(type);
-		
 		List<Type> list = typeService.findByPager(pager);
 		int total = typeService.findTotalByPager(pager);
 		pager.setTotal(total);
@@ -42,12 +40,10 @@ public class TypeController {
 		
 		return pager;
 	}
-	
 	@RequestMapping("add")
 	@ResponseBody
 	public Result add(Type type) {
 		Result result = new Result(false, "新增失败");
-		System.out.println("-----"+type);
 		try {
 			boolean ret = typeService.add(type);
 			if(ret) {
@@ -63,7 +59,6 @@ public class TypeController {
 	@ResponseBody
 	public Result edit(Type type) {
 		Result result = new Result(false, "修改失败");
-		
 		try {
 			boolean ret = typeService.edit(type);
 			if(ret) {
@@ -79,7 +74,6 @@ public class TypeController {
 	@ResponseBody
 	public Result delete(Type type) {
 		Result result = new Result(false, "删除失败");
-		
 		try {
 			boolean ret = typeService.delete(type);
 			if(ret) {

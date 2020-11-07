@@ -18,7 +18,7 @@ import com.durgshop.service.DoctorService;
 import com.durgshop.util.PasswordUtils;
 /**
  * 创建时间2020/7/12 
- * @author LQH
+ * @author TonyWang
  *
  */
 @Controller
@@ -36,14 +36,12 @@ public class DoctorController {
 		pager.setCondition(doctor);
 		List<Doctor> list = doctorService.findByPager(pager);
 		int total = doctorService.findTotalByPager(pager);
-
 		pager.setTotal(total);
 		pager.setRows(list);
 
 		// 返回的对象网页或浏览器 不能识别，需要转成json字符串；使用jackson进行转换
 		return pager;
 	}
-
 	/**
 	 *
 	 * @param goods 搜索参数
@@ -68,7 +66,7 @@ public class DoctorController {
 	@ResponseBody
 	public Result add(Doctor doctor) {
 		Result result = new Result(false, "新增失败");
-		
+		 
 		System.out.println(doctor);
 		try {
 			if (doctor.getPassword() != null && doctor.getPassword().trim().length() > 0) {
@@ -93,17 +91,14 @@ public class DoctorController {
 	@RequestMapping("edit")
 	@ResponseBody
 	public Result edit(Doctor doctor,HttpServletRequest request) {
-		
 		String oldpass = request.getParameter("opassword");
 		String newpass = request.getParameter("newpassword");
 		String passString=request.getParameter("password");
 		Result result = new Result(false, "修改失败");
 		System.out.println("=="+doctor+"--");
 		System.out.println("旧密码"+oldpass+"新密码"+newpass);
-		
 		Doctor login = doctorService.login(doctor);
 		if (login != null) {
-			
 			// 盐-从数据库查询除出新增或修改时的盐 
 			String salt = login.getSalt(); 
 			//用户登录输入的明文 
@@ -114,7 +109,6 @@ public class DoctorController {
 			String userPass=login.getPassword();
 			if(passString.equals(newpass)) {
 				if(encString.equals(userPass)) {
-					
 					try {
 						if (doctor.getPassword() != null && doctor.getPassword().trim().length() > 0) {
 							String salt2 = PasswordUtils.getSalt();
@@ -131,24 +125,19 @@ public class DoctorController {
 					}
 					
 				}else {
-					result = new Result(false, "原密码错误！");
-					
+					result = new Result(false, "原密码错误！");	
 				}
 			}
 		}else{
 			result = new Result(false, "请确认新密码与确认密码是否一致？");
 		}
 		return result;
-		
-		
 	}
 	
 	@RequestMapping("update")
 	@ResponseBody
 	public Result update(Doctor doctor) {
-		
 		Result result = new Result(false, "修改失败");
-					
 		try {
 			if (doctor.getPassword() != null && doctor.getPassword().trim().length() > 0) {
 				String salt = PasswordUtils.getSalt();
@@ -163,10 +152,7 @@ public class DoctorController {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		return result;
-		
-		
 	}
 
 	@RequestMapping("delete")

@@ -143,7 +143,7 @@
 	        var ddv = $(this).datagrid('getRowDetail',index).find('table.ddv');
 	       
 	        ddv.datagrid({
-	            url:'${pageContext.request.contextPath}/sys/stockInDetail/stockInDetailandDrugList?stockInNo='+row.stockInNo,
+	            url:'${pageContext.request.contextPath}/sys/stockInDetail/stockIn3DetailandDrugList?stockInNo='+row.stockInNo,
 	            fitColumns:true,
 	            singleSelect:true,
 	            rownumbers:true,

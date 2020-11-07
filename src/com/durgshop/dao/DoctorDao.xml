@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- namespace表示当前映射文件要映射的接口 -->
+ <mapper namespace="com.durgshop.dao.DoctorDao">
+ 
+   <!-- 配置一个结果映射，把数据库sql执行的查询列映射到java实体的属性中   (ORM对象关系映射) -->
+   <!-- type配置java的实体类的名称，id自定义 -->
+   <resultMap type="Doctor" id="DoctorMap">
+     <!-- id标签一般配置主键列 ，column对应数据库表的列，property对应类的属性-->
+     <id  column="doctorNo"  property="doctorNo"/>
+     <result column="doctorName" property="doctorName"/>
+     <result column="password" property="password"/>
+     <result column="doctorEntryTime" property="doctorEntryTime"/>
+     <result column="doctorSex" property="doctorSex"/>
+     <result column="doctorAge" property="doctorAge"/>
+     <result column="doctorEmail" property="doctorEmail"/>
+     <result column="salt" property="salt"/>
+     <result column="isDelete" property="isDelete"/>
+   </resultMap>
+ 
+ 	
+ 	<!-- 对于多次使用的sql代码可以使用sql标签统一进行编写，在使用的位置使用include标签进行包含 -->
+     <sql id="pagerWhere">
+       <where> 
+            isDelete =0
+           <if test="condition!=null and condition.doctorName!=null ">
+             <!--模糊查询有4种编写方法： -->
+             <!--使用数据库的字符串连接函数构造模糊查询条件 -->
+            and  doctorName like   concat('%',#{condition.doctorName},'%')
+           </if>
+           <if test="condition!=null and condition.doctorPhone!=null ">
+           and  doctorPhone like   concat('%',#{condition.doctorPhone},'%')
+           </if>
+            <if test="condition!=null and condition.doctorEntryTime!=null ">
+           and  doctorEntryTime like   concat('%',#{condition.doctorEntryTime},'%')
+           </if>
+            <if test="condition!=null and condition.doctorSex!=null ">
+            and doctorSex like   concat('%',#{condition.doctorSex},'%')
+           </if>
+            <if test="condition!=null and condition.doctorAge!=null ">
+            and doctorAge like   concat('%',#{condition.doctorAge},'%')
+           </if>
+            <if test="condition!=null and condition.doctorEmail!=null ">
+            and doctorEmail like   concat('%',#{condition.doctorEmail},'%')
+           </if>
+           <if test="condition!=null and condition.doctorNo!=null ">
+            and doctorNo like   concat('%',#{condition.doctorNo},'%')
+           </if>
+           
+       </where>
+     </sql>
+     
+   <!-- 使用select标签配置查询sql，id配置查询的方法名 -->
+   <select id="findByPager" resultMap="DoctorMap" parameterType="Pager">
+     select * from doctor   
+        <!-- 包含公共的sql的where查询条件 -->
+        
+        <include refid="pagerWhere" />
+       <if test="start !=null and size !=null">
+          limit  #{start},#{size}
+       </if>
+   </select>
+   
+      <select id="findTotalByPager" resultType="int" parameterType="Pager">
+        <!-- 统计查询的关联表和查询条件必须跟数据查询一致；统计结果只有一行一列不需要进行分页 -->
+        select count(*) from doctor 
+        <!-- 包含公共的sql的where查询条件 -->
+         <include refid="pagerWhere" />
+   </select>
+   
+   
+   
+   <!-- id配置接口方法的名称 ; 
+                     在mybatis中，使用#{} 或  ${} 获取接口传递过来的参数；#{}会执行PreparedStatement操作，可以防止sql注入攻击，建议使用；
+   -->
+   <insert id="add" parameterType="Doctor">
+       insert into doctor(doctorName,password,salt,doctorPhone,doctorEntryTime,doctorSex,doctorAge,doctorEmail,isDelete)  
+       values(#{doctorName},#{password},#{salt},#{doctorPhone},#{doctorEntryTime},#{doctorSex},#{doctorAge},#{doctorEmail},0)
+   </insert>
+   
+   <update id="edit" >
+   		update doctor
+   		<!-- 动态sql: 提供解决动态生成sql时的各种问题的标签， set标签会把多余的逗号去除
+   		 -->
+   		<set>
+   		   <!-- test="nickName!=null"  nickName是java的属性名 -->
+   		   <!-- nickName(表的列名) = #{nickName(java类的属性名 )}  -->
+   		   <if test="doctorName!=null">doctorName = #{doctorName}, </if>
+   		   <if test="password!=null and salt !=null">
+   		   		password = #{password}, 
+   		   		salt = #{salt},
+   		   
+   		   </if>
+   		   <if test="doctorPhone!=null">doctorPhone = #{doctorPhone}, </if>
+   		   <if test="doctorEntryTime!=null">doctorEntryTime = #{doctorEntryTime}, </if>
+   		   <if test="doctorSex!=null">doctorSex = #{doctorSex}, </if>
+   		   <if test="doctorAge!=null">doctorAge = #{doctorAge}, </if>
+   		   <if test="doctorEmail!=null">doctorEmail = #{doctorEmail}, </if>
+   		   <if test="isDelete!=null">isDelete = #{isDelete}, </if>
+   		</set>
+   		
+   		 <!-- 
+   		     where不建议使用if标签进行嵌套，避免没有传递条件导致整表的数据都被修改掉
+   		     修改单条数据时，where条件使用主键列进行约束
+   		 <if test="userNo!=null">
+   		     where userNo = #{userNo}
+   		 </if> -->
+   		 where doctorNo = #{doctorNo}
+   </update>
+   
+   <update id="delete" parameterType="Doctor">
+        <!--   删除单条数据时，where条件使用主键列进行约束 -->
+        update doctor  set isDelete = 1 where doctorNo = #{doctorNo}
+        
+   </update>
+ 
+    <!-- 系统登录功能 -->
+    <!-- mybatis可以把查询很出的数据，按照列名与类的属性名对应关系，把数据保存到java对象中 -->
+    <select id="login" resultType="Doctor" parameterType="Doctor">
+       select doctorNo,doctorName,password,salt from doctor where 
+        doctorNo = #{doctorNo}
+    </select>
+ 
+ 
+ </mapper> 
+  

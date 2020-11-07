@@ -4,11 +4,10 @@ import com.durgshop.entity.Doctor;
 
 /**
  * 创建时间2020/7/11
- * @author LQH
+ * @author TonyWang
  *
  */
 public interface DoctorDao extends BaseDao<Doctor> {
-	
 	/**
 	 * 继承的目的是为了方便功能扩展，同时也继承了父类的功能
 	 * 

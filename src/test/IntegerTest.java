@@ -1,10 +1,5 @@
 package test;
 
-/**
- * 
- * @author netboy
- *
- */
 public class IntegerTest {
 
 	public static void main(String[] args) {

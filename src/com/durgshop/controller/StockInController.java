@@ -53,7 +53,6 @@ public class StockInController {
 	@RequestMapping("addStockIn")
 	public Result add(StockIn stockIn) {
 		Result result = new Result(false, "新增失败");
-		System.out.println(stockIn);
 		try {
 			
 			boolean ret = stockInService.add(stockIn);

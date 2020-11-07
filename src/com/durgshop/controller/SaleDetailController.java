@@ -90,12 +90,8 @@ public class SaleDetailController {
 				    ret = saleDetailService.add(saleDetail);
 				    if (ret1&ret) {
 						result = new Result(true, "新增成功");
-					}	
-				   
-				
+					}		
 			}
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -134,8 +130,6 @@ public class SaleDetailController {
 				number2 = saleDetail.getSaleQuantity();	
 				//数据库的药品编号
 				number5 = saleDetail1.getDrugNo();
-
-				
 					//数据库存了采购了的量的
 				   //如果没有修改药品数量
 					if (number5==number6&&number1!=number2) {
@@ -176,9 +170,7 @@ public class SaleDetailController {
 				storage1.setStorageNumber(number10);
 				ret3 = storageService.edit(storage1);
 				System.out.println("我在改两个库存信息");
-				
 				}
-		
 			else{
 				Storage storage1 = storageService.findById(number11);
 				int number9 = storage1.getStorageNumber();
@@ -195,9 +187,7 @@ public class SaleDetailController {
 		}	
 			if (ret&ret1&ret3) {
 					result = new Result(true, "修改成功");
-				}
-			
-				
+				}	
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -214,7 +204,6 @@ public class SaleDetailController {
 			System.out.println("================================");
 			
 			int SaleDetailNo = saleDetail.getSaleDetailNo();
-			System.out.println(SaleDetailNo);
 			SaleDetail saleDetail1 = saleDetailService.findById(SaleDetailNo);
 			int drugNo = saleDetail1.getDrugNo();
 			Storage storage2 = storageService.findById(drugNo);	

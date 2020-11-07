@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 /**
  * 医生信息实体类
- * @author LQH
+ * @author TonyWang
  *
  */
 public class Doctor {

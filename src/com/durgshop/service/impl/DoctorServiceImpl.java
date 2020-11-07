@@ -9,7 +9,7 @@ import com.durgshop.entity.Doctor;
 import com.durgshop.service.DoctorService;
 /**
  * 
- * @author LQH
+ * @author TonyWang
  *
  */
 @Service
